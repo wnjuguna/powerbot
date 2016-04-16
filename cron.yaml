@@ -1,0 +1,9 @@
+cron:
+ - description: Update alerts database at midnight
+   url: /powerbot/update
+   schedule: every day 22:00
+   timezone: Africa/Nairobi
+ - description: Send out alerts once a day
+   url: /powerbot/notify
+   schedule: every day 18:00
+   timezone: Africa/Nairobi
