@@ -47,7 +47,7 @@ class MessageHandler(object):
         return json.dumps(kb)
 
     def notifySubs(self):
-        notices = PowerAlert().notices()
+        notices = PowerAlert().notices
         subs = User().subs
         for sub in subs:
             self.params['chat_id'] = sub.chat_id
