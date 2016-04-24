@@ -88,9 +88,9 @@ class User(object):
 
     def deregisterUser(self, msg):
         content_type, chat_type, chat_id = telepot.glance(msg)
-        sub = ndb.Key('Subscriber', str(chat_id))
+        sub_key = ndb.Key('Subscriber', str(chat_id))
         try:
-            sub.key.delete()
+            sub_key.delete()
         except Error, e:
             logging.error("Unable to delete sub: %s" %(e))
         else:
