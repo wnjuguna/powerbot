@@ -36,12 +36,13 @@ class MessageHandler(object):
     
     def _getKeyboard(self, msg):
         sub = User()
-        kb = {'keyboard':[['Check'], ['Unsubscribe']],
-              'resize_keyboard': True}
-        self.params['text'] = self._registeredmsg
-        if not sub.isRegistered(msg):
-            sub.registerUser(msg)
-            self.params['text'] = self._successmsg
+        if sub.isRegistered(msg):
+            kb = {'keyboard':[['Check'], ['Unsubscribe']],
+                  'resize_keyboard': True}
+        else:
+            kb = {'keyboard':[['Check'],['Subscribe']],
+                  'resize_keyboard': True}
+
         if sub.isAdmin(msg):
             kb = {'keyboard': [['Check'], ['Update']],
                   'resize_keyboard': True}
@@ -62,12 +63,15 @@ class MessageHandler(object):
         self.params['reply_markup'] = self._getKeyboard(msg)
         if content_type == 'text':
             command = msg['text'].strip().lower()
-            if command == '/start':
-                pass
+            if command == '/start' or command == 'subscribe':
+                User().registerUser(msg)
+                self.params['text'] = self._successmsg
+                self.params['reply_markup'] = self._getKeyboard(msg)
             elif command == 'unsubscribe':
                 result = User().deregisterUser(msg)
                 if result:
                     self.params['text'] = self._deregistermsg
+                    self.params['reply_markup'] = self._getKeyboard(msg)
             elif command == 'update':
                 notice = PowerAlert().crawlPage()
                 self.params['text'] = 'updated'
