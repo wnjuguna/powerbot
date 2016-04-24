@@ -15,6 +15,7 @@ class MessageHandler(object):
         self._successmsg = '*Great!* Thanks for registering.'
         self._emptynoticemsg = 'There are *no* scheduled outages today'
         self._registeredmsg = 'You are already registered.'
+        self._deregistermsg = "We are sad to see you go u'\U0001f604'"
         self.params = {'chat_id': None, 'text': None, 'parse_mode': 'markdown'}
         try:
             f = open('config.yaml', 'r').read()
@@ -35,7 +36,7 @@ class MessageHandler(object):
     
     def _getKeyboard(self, msg):
         sub = User()
-        kb = {'keyboard':[['Check']],
+        kb = {'keyboard':[['Check'], ['Unsubscribe']],
               'resize_keyboard': True}
         self.params['text'] = self._registeredmsg
         if not sub.isRegistered(msg):
@@ -63,8 +64,10 @@ class MessageHandler(object):
             command = msg['text'].strip().lower()
             if command == '/start':
                 pass
-            elif command == 'register':
-                pass
+            elif command == 'unsubscribe':
+                result = User().deregisterUser(msg)
+                if result:
+                    self.params['text'] = self._unsubreply
             elif command == 'update':
                 notice = PowerAlert().crawlPage()
                 self.params['text'] = 'updated'
