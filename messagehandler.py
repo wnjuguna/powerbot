@@ -12,10 +12,11 @@ import yaml
 class MessageHandler(object):
     def __init__(self):
         self._errmsg = 'Sorry. I do not understand your request.'
-        self._successmsg = '*Great!* Thanks for registering'
+        self._successmsg = '*Great!* Thanks for registering. You will receive
+        an alert for scheduled power outages at 18:00'
         self._emptynoticemsg = 'There are *no* scheduled outages today'
         self._registeredmsg = 'You are already registered.'
-        self._deregistermsg = 'We are sad to see you go'
+        self._deregistermsg = 'We are sad to see you go. You will no longer receive alerts.'
         self.params = {'chat_id': None, 'text': None, 'parse_mode': 'markdown'}
         try:
             f = open('config.yaml', 'r').read()
