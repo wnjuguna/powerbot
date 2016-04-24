@@ -72,9 +72,9 @@ class PowerAlert(object):
         """
         date = datetime.today()
         today = datetime(date.year, date.month, date.day)
-        tomorrow = today + timedelta(days=2)
+        tomorrow = today + timedelta(days=1)
         try:
-            cursor = Notice.query(Notice.date >= today, Notice.date <= tomorrow)
+            cursor = Notice.query(Notice.date > today, Notice.date <= tomorrow)
         except Exception, e:
             print "Unable to query DB: %s" %(e)
         else:
