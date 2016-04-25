@@ -5,6 +5,7 @@ from urllib import urlencode
 from telepot import glance
 from google.appengine.api import urlfetch
 from google.appengine.api.urlfetch import InvalidURLError, DownloadError
+from google.appengine.ext import deferred
 from users import User
 import json
 import yaml
@@ -54,7 +55,7 @@ class MessageHandler(object):
         for sub in subs:
             self.params['chat_id'] = sub.chat_id
             self.params['text'] = notices
-            self._sendReply()
+            deferred.defer(self._sendReply)
         return
 
     def routeMessage(self, msg):
