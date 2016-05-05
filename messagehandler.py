@@ -12,11 +12,11 @@ import yaml
 
 class MessageHandler(object):
     def __init__(self):
-        self._errmsg = 'Sorry. I do not understand your request.'
-        self._successmsg = "*Great!* Thanks for registering \xf0\x9f\x98\x84. We'll send you alerts for scheduled power outages at 18:00"
-        self._emptynoticemsg = 'There are *no* scheduled outages today'
-        self._registeredmsg = 'You are already registered.'
-        self._deregistermsg = '\xf0\x9f\x98\x9e We are sad to see you go. You will no longer receive alerts.'
+        self._errmsg = u'Sorry. I do not understand your request.'
+        self._successmsg = u"*Great!* Thanks for registering \U0001f604. We'll send you alerts for scheduled power outages at 18:00"
+        self._emptynoticemsg = u'There are *no* scheduled outages today'
+        self._registeredmsg = u'You are already registered.'
+        self._deregistermsg = u'\U0001f61e We are sad to see you go. You will no longer receive alerts.'
         self.params = {'chat_id': None, 'text': None, 'parse_mode': 'markdown'}
         try:
             f = open('config.yaml', 'r').read()
@@ -28,6 +28,7 @@ class MessageHandler(object):
             return
 
     def _sendReply(self):
+        self.params['text'] = self.params['text'].encode('utf-8', 'ignore')
         params = urlencode(self.params)
         try:
             urlfetch.Fetch(self.api+'sendMessage', payload=params, method='POST')
@@ -78,7 +79,6 @@ class MessageHandler(object):
                 self.params['text'] = 'updated'
             elif command == 'check':
                 reply = PowerAlert().notices
-                self.params['text'] = reply
                 if reply:
                     self.params['text'] = reply
                 else:
