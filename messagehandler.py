@@ -82,7 +82,7 @@ class MessageHandler(object):
                 if reply:
                     self.params['text'] = reply
                 else:
-                    self.params['text'] = self._emptynotice
+                    self.params['text'] = self._emptynoticemsg
             else:
                 self.params['text'] = self._errmsg
         else:
