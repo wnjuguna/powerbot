@@ -22,7 +22,7 @@ class PowerAlert(object):
         """
         Initialize object
         """
-        self.url = "http://poweralerts.kplc.co.ke"
+        self.url = "http://poweralerts.kenyapower.co.ke"
         return
 
     def fetchPage(self):
