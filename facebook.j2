@@ -1,7 +1,9 @@
 {% for alert in alerts %}
 Town: {{ alert['town'] }}
+Date: {{ alert['date'] }}
 Duration: {{ alert['duration' }}
 
+Neighbourhood:
+{{ alert['hood'] }}
 
-Neighbourhood: {{ alert['msg'] }}
 {% endfor %}
