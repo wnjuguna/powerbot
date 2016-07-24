@@ -10,7 +10,7 @@ import re
 import os
 import jinja2
 
-JINJA_ENVIRONMENT = jinja2.Environment(
+JINJA2_ENVIRONMENT = jinja2.Environment(
         loader = jinja2.loaders.FileSystemLoader(
             [os.path.dirname('__file__')]),
         extensions = ['jinja2.ext.autoescape'],
