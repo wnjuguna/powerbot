@@ -11,3 +11,6 @@ handlers:
    login: admin
 builtins:
  - deferred: on
+libraries:
+ - name: jinja2
+   version: latest

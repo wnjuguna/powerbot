@@ -7,6 +7,14 @@ from google.appengine.api import urlfetch
 from google.appengine.api.urlfetch import InvalidURLError, DownloadError
 from urllib import urlencode
 import re
+import os
+import jinja2
+
+JINJA_ENVIRONMENT = jinja2.Environment(
+        loader = jinja2.loaders.FileSystemLoader(
+            [os.path.dirname('__file__')]),
+        extensions = ['jinja2.ext.autoescape'],
+        autoescape = True)
 
 class Notice(ndb.Model):
     """
@@ -66,7 +74,7 @@ class PowerAlert(object):
         return
 
     @property
-    def notices(self):
+    def notices(self, dst='telegram' ):
         """
         Query DB for scheduled outages for today and tomorrow
         """
@@ -78,12 +86,21 @@ class PowerAlert(object):
         except Exception, e:
             print "Unable to query DB: %s" %(e)
         else:
-            msg = ''
+            alerts = []
             for notice in cursor:
                 town = notice.town
                 date = notice.date.strftime('%A, %b %d')
                 duration = notice.duration
                 hood = notice.neighbourhood
-                msg += "*Town:* %s\n*Date:* %s\n*Duration:* %s\
-                \n*Neighbourhood:* %s\n\n" %(town, date, duration, hood)
-            return msg
+                alerts.append({
+                    'town': town,
+                    'date': date,
+                    'duration': duration,
+                    'hood': hood })
+
+            template_vars = {'alerts': alerts}
+            if dst == 'telegram':
+                template = JINJA2_ENVIRONMENT.get_template('telegram.j2')
+            else:
+                template = JINJA2_ENVIRONMENT.get_template('facebook.j2')
+            return template.render(template_vars)
