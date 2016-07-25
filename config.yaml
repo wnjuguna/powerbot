@@ -1,4 +1,5 @@
 # Requires your Telegram bot auth_key and Telegram usernames for admin users
 api_key: xxxxx
+fb_token: xxxxx
 admin:
  - xxxxx
