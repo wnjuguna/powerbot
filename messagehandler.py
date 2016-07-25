@@ -25,6 +25,8 @@ class MessageHandler(object):
         else:
             config = yaml.load(f)
             self.api = 'https://api.telegram.org/bot%s/' %(config['api_key'])
+            self.graph_api = 'https://graph.facebook.com/PowerAlerts/feed'
+            self.page_token = config['fb_token']
             return
 
     def _sendReply(self):
@@ -32,6 +34,17 @@ class MessageHandler(object):
         params = urlencode(self.params)
         try:
             urlfetch.Fetch(self.api+'sendMessage', payload=params, method='POST')
+        except (InvalidURLError, DownloadError), e:
+            raise(e)
+        return
+
+    def _facebookPost(self, post):
+        params = {
+                'message': post.encode('utf-8', 'ignore'),
+                'access_token': self.page_token }
+        params = urlencode(params)
+        try:
+            urlfetch.Fetch(self.graph_api, payload=params, method='POST')
         except (InvalidURLError, DownloadError), e:
             raise(e)
         return
@@ -51,12 +64,17 @@ class MessageHandler(object):
         return json.dumps(kb)
 
     def notifySubs(self):
-        notices = PowerAlert().notices
+        """
+        Post message to FB and send alerts to Telegram subs.
+        """
+        post, notices = PowerAlert().notices
         subs = User().subs
         for sub in subs:
             self.params['chat_id'] = sub.chat_id
             self.params['text'] = notices
             deferred.defer(self._sendReply)
+
+        deferred.defer(self._facebookPost(post))
         return
 
     def routeMessage(self, msg):
@@ -78,7 +96,7 @@ class MessageHandler(object):
                 notice = PowerAlert().crawlPage()
                 self.params['text'] = 'updated'
             elif command == 'check':
-                reply = PowerAlert().notices
+                post, reply = PowerAlert().notices
                 if reply:
                     self.params['text'] = reply
                 else:

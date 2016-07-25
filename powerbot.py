@@ -74,7 +74,7 @@ class PowerAlert(object):
         return
 
     @property
-    def notices(self, dst='telegram' ):
+    def notices(self):
         """
         Query DB for scheduled outages for today and tomorrow
         """
@@ -99,8 +99,8 @@ class PowerAlert(object):
                     'hood': hood })
 
             template_vars = {'alerts': alerts}
-            if dst == 'telegram':
-                template = JINJA2_ENVIRONMENT.get_template('telegram.j2')
-            else:
-                template = JINJA2_ENVIRONMENT.get_template('facebook.j2')
-            return template.render(template_vars)
+            template = JINJA2_ENVIRONMENT.get_template('telegram.j2')
+            telegram = template.render(template_vars)
+            template = JINJA2_ENVIRONMENT.get_template('facebook.j2')
+            facebook = template.render(template_vars)
+            return facebook, telegram
