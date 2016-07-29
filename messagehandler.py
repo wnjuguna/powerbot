@@ -17,7 +17,11 @@ class MessageHandler(object):
         self._emptynoticemsg = u'There are *no* scheduled outages today'
         self._registeredmsg = u'You are already registered.'
         self._deregistermsg = u'\U0001f61e We are sad to see you go. You will no longer receive alerts.'
-        self.params = {'chat_id': None, 'text': None, 'parse_mode': 'markdown'}
+        self._message = ''
+        self.params = {
+                'chat_id': None, 
+                'text': None, 
+                'parse_mode': 'markdown' }
         try:
             f = open('config.yaml', 'r').read()
         except IOError, e:
@@ -38,11 +42,10 @@ class MessageHandler(object):
             raise(e)
         return
 
-    def _facebookPost(self, post):
-        params = {
-                'message': post.encode('utf-8', 'ignore'),
-                'access_token': self.page_token }
-        params = urlencode(params)
+    def _facebookPost(self):
+        params = urlencode({
+                'message': self._message.encode('utf-8', 'ignore'),
+                'access_token': self.page_token })
         try:
             urlfetch.Fetch(self.graph_api, payload=params, method='POST')
         except (InvalidURLError, DownloadError), e:
@@ -68,13 +71,15 @@ class MessageHandler(object):
         Post message to FB and send alerts to Telegram subs.
         """
         post, notices = PowerAlert().notices
-        subs = User().subs
-        for sub in subs:
-            self.params['chat_id'] = sub.chat_id
-            self.params['text'] = notices
-            deferred.defer(self._sendReply)
+        if notices:
+            subs = User().subs
+            for sub in subs:
+                self.params['chat_id'] = sub.chat_id
+                self.params['text'] = notices
+                deferred.defer(self._sendReply)
 
-        deferred.defer(self._facebookPost(post))
+            self._message = post
+            deferred.defer(self._facebookPost)
         return
 
     def routeMessage(self, msg):
@@ -105,5 +110,5 @@ class MessageHandler(object):
                 self.params['text'] = self._errmsg
         else:
                 self.params['text'] = self._errmsg
-        self._sendReply()
+        deferred.defer(self._sendReply)
         return
